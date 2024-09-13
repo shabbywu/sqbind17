@@ -54,7 +54,7 @@ if(${BUILD_SQUIRREL} OR ${BUILD_CPP_TESTCASE})
   target_compile_options(squirrel_static PRIVATE -fPIC)
   target_compile_options(sqstdlib_static PRIVATE -fPIC)
 
-  target_link_libraries(sqbind17::sqbind17 INTERFACE squirrel_static sqstdlib_static)
+  target_link_libraries(sqbind17 INTERFACE squirrel_static sqstdlib_static)
 endif()
 
 if(${BUILD_CPP_TESTCASE})
