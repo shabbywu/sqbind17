@@ -5,8 +5,8 @@ cmake_minimum_required(VERSION 3.13)
 # Enable VCPKG if VCPKG_ROOT defined.
 if(DEFINED ENV{VCPKG_ROOT})
   set(CMAKE_TOOLCHAIN_FILE
-      "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-      CACHE FILEPATH "")
+    "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    CACHE FILEPATH "")
 else()
   message("!!! no vcpkg_root")
 endif()
@@ -36,7 +36,8 @@ if(NOT TARGET sqbind17_header)
   add_library(sqbind17_header INTERFACE)
   target_include_directories(
     sqbind17_header INTERFACE ${CMAKE_CURRENT_LIST_DIR}/include
-                              ${squirrel_dir}/include ${squirrel_dir}/squirrel)
+    ${squirrel_dir}/include ${squirrel_dir}/squirrel)
+  add_library(sqbind17::header ALIAS sqbind17_header)
 endif()
 
 option(BUILD_SQUIRREL "Build squirrel?" OFF)
@@ -45,6 +46,7 @@ option(BUILD_CPP_TESTCASE "Build cpp test?" OFF)
 if(NOT TARGET sqbind17)
   add_library(sqbind17 INTERFACE)
   target_link_libraries(sqbind17 INTERFACE sqbind17_header)
+  add_library(sqbind17::sqbind17 ALIAS sqbind17)
 endif()
 
 if(${BUILD_SQUIRREL} OR ${BUILD_CPP_TESTCASE})
@@ -52,7 +54,7 @@ if(${BUILD_SQUIRREL} OR ${BUILD_CPP_TESTCASE})
   target_compile_options(squirrel_static PRIVATE -fPIC)
   target_compile_options(sqstdlib_static PRIVATE -fPIC)
 
-  target_link_libraries(sqbind17 INTERFACE squirrel_static sqstdlib_static)
+  target_link_libraries(sqbind17::sqbind17 INTERFACE squirrel_static sqstdlib_static)
 endif()
 
 if(${BUILD_CPP_TESTCASE})
