@@ -1,0 +1,9 @@
+# 指定编译参数
+link_libraries(sqbind17)
+
+add_executable(test_cpp_function test_cpp_function.cpp)
+add_executable(test_cpp_class test_cpp_class.cpp)
+add_executable(test_cast test_cast.cpp)
+add_executable(test_sqtable test_sqtable.cpp)
+add_executable(test_sqarray test_sqarray.cpp)
+set(CMAKE_CXX_STANDARD 17)

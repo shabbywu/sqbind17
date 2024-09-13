@@ -1,0 +1,34 @@
+#pragma once
+#include "holder.hpp"
+#include "sqbind17/detail/sqdefinition.hpp"
+#include "sqvm.hpp"
+
+namespace sqbind17 {
+namespace detail {
+class ObjectPtr {
+  public:
+    using Holder = SQObjectPtrHolder<::SQObjectPtr>;
+    using ErrNotFound = sqbind17::key_error;
+
+  public:
+    ObjectPtr(::SQObjectPtr &pObject, VM vm) : holder(std::make_shared<Holder>(pObject, vm)) {};
+    ObjectPtr(::SQObjectPtr &&pObject, VM vm) : holder(std::make_shared<Holder>(pObject, vm)) {};
+
+  public:
+    std::shared_ptr<Holder> holder;
+
+  public:
+    SQUnsignedInteger getRefCount() {
+        return sq_getrefcount(holder->GetSQVM(), &holder->GetSQObjectPtr());
+    }
+
+    SQObjectType type() {
+        return holder->GetSQObjectPtr()._type;
+    }
+
+    SQObjectPtr &operator*() {
+        return (holder->GetSQObjectPtr());
+    }
+};
+} // namespace detail
+} // namespace sqbind17

@@ -1,0 +1,7 @@
+[submodule "externals/libs/SQUIRREL32"]
+    path = externals/libs/SQUIRREL32
+    url = https://github.com/shabbywu/squirrel.git
+[submodule "externals/libs/SQUIRREL305"]
+    path = externals/libs/SQUIRREL305
+    url = https://github.com/shabbywu/squirrel.git
+    branch = sq305

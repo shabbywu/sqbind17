@@ -1,0 +1,86 @@
+{
+    "version": 5,
+    "configurePresets": [
+        {
+            "name": "default",
+            "binaryDir": "${sourceDir}/build/${hostSystemName}",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin/",
+                "INSTALL_PYTHON": "1",
+                "CMAKE_BUILD_TYPE": "Release",
+                "SQ_DISABLE_INTERPRETER": "ON",
+                "DISABLE_DYNAMIC": "ON",
+                "SQUIRREL305": "1"
+            },
+            "environment": {
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/.vcpkg/triplets"
+            },
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-x86",
+            "inherits": "default",
+            "displayName": "Windows-X86 Release",
+            "description": "This build is only available on Windows",
+            "architecture": "Win32",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-x64",
+            "inherits": "default",
+            "displayName": "Windows-x64 Release",
+            "description": "This build is only available on Windows",
+            "architecture": "x64",
+            "generator": "Visual Studio 17 2022",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "configuration": "Release",
+            "condition": {
+                "type": "notEquals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-x86",
+            "inherits": "default",
+            "configurePreset": "windows-x86",
+            "configuration": "Release",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-x64",
+            "inherits": "default",
+            "configurePreset": "windows-x64",
+            "configuration": "Release",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ]
+}
