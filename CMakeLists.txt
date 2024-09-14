@@ -2,25 +2,7 @@
 #
 cmake_minimum_required(VERSION 3.13)
 
-# Enable VCPKG if VCPKG_ROOT defined.
-if(DEFINED ENV{VCPKG_ROOT})
-  set(CMAKE_TOOLCHAIN_FILE
-    "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-    CACHE FILEPATH "")
-else()
-  message("!!! no vcpkg_root")
-endif()
-
-# Enable VCPKG if VCPKG_ROOT defined.
-option(INSTALL_PYTHON "Install Python with vcpkg?" OFF)
-
-if(INSTALL_PYTHON)
-  list(APPEND VCPKG_MANIFEST_FEATURES "with-python3")
-else()
-  list(APPEND VCPKG_MANIFEST_FEATURES "without-python3")
-endif()
-
-project("PySquirrel")
+project("sqbind17")
 set(CMAKE_CXX_STANDARD 17)
 
 # 设置变量
