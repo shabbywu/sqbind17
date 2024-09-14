@@ -33,8 +33,8 @@ endif()
 
 if(${BUILD_SQUIRREL} OR ${BUILD_CPP_TESTCASE})
   add_subdirectory(${squirrel_dir} squirrel)
-  target_compile_options(squirrel_static PRIVATE -fPIC)
-  target_compile_options(sqstdlib_static PRIVATE -fPIC)
+  target_compile_options(squirrel_static PRIVATE -fPIC /MT)
+  target_compile_options(sqstdlib_static PRIVATE -fPIC /MT)
 
   target_link_libraries(sqbind17 INTERFACE squirrel_static sqstdlib_static)
 endif()
