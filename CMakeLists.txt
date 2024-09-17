@@ -32,6 +32,8 @@ if(NOT TARGET sqbind17)
 endif()
 
 if(${BUILD_SQUIRREL} OR ${BUILD_CPP_TESTCASE})
+  set(DISABLE_DYNAMIC TRUE)
+  set(SQ_DISABLE_INTERPRETER TRUE)
   add_subdirectory(${squirrel_dir} squirrel)
   target_compile_options(squirrel_static PRIVATE -fPIC /MT)
   target_compile_options(sqstdlib_static PRIVATE -fPIC /MT)
