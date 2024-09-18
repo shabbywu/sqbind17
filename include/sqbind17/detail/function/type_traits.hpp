@@ -40,7 +40,7 @@ enum class CppFuntionType {
     ClassMethodConstRef = 0b100000,
 };
 
-template <typename Func, typename Enabled = void, typename... Extra> struct function_traits {
+template <typename Func, typename Enabled = void> struct function_traits {
     static constexpr CppFuntionType value = CppFuntionType::NotFunc;
 };
 
