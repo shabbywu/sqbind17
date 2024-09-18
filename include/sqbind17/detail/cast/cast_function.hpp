@@ -30,6 +30,21 @@ static ToType generic_cast(detail::VM vm, FromType &&from) {
     return from.pNativeClosure();
 }
 
+// cast native cpp function to SQObjectPtr|HSQOBJECT
+template <typename FromType, typename ToType,
+          typename std::enable_if_t<detail::function_traits<FromType>::value != detail::CppFuntionType::NotFunc &&
+                                    !std::is_base_of_v<detail::ClosureBase, std::decay_t<FromType>>> * = nullptr,
+          typename std::enable_if_t<std::is_same_v<std::decay_t<ToType>, SQObjectPtr> ||
+                                    std::is_same_v<std::decay_t<ToType>, HSQOBJECT>> * = nullptr>
+static ToType generic_cast(detail::VM vm, FromType &&from) {
+#ifdef TRACE_OBJECT_CAST
+    std::cout << "[TRACING] cast " << typeid(decltype(from)).name() << " to " << typeid(ToType).name() << std::endl;
+#endif
+    return detail::CreateNativeClosure(std::forward<FromType>(from), vm).pNativeClosure();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
 // cast SQObjectPtr|HSQOBJECT to detail::Closure
 template <typename FromType, typename ToType,
           typename std::enable_if_t<std::is_same_v<std::decay_t<FromType>, SQObjectPtr> ||

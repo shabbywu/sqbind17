@@ -31,6 +31,7 @@ template <typename Return, typename Class, typename... Args> struct functor_trai
 };
 
 enum class CppFuntionType {
+    NotFunc = 0b0,
     LambdaLike = 0b1,
     VanillaFunctionPointer = 0b10,
     ClassMethodNonConstNoRef = 0b100,
@@ -39,8 +40,15 @@ enum class CppFuntionType {
     ClassMethodConstRef = 0b100000,
 };
 
+template <typename Func, typename Enabled = void, typename... Extra> struct function_traits {
+    static constexpr CppFuntionType value = CppFuntionType::NotFunc;
+};
+
 template <typename Func>
-struct function_traits : public functor_traits<decltype(&std::remove_reference_t<Func>::operator())> {
+struct function_traits<
+    Func, std::enable_if_t<std::is_class_v<std::remove_reference_t<Func>> &&
+                           std::is_member_function_pointer_v<decltype(&std::remove_reference_t<Func>::operator())>>>
+    : public functor_traits<decltype(&std::remove_reference_t<Func>::operator())> {
     static constexpr CppFuntionType value = CppFuntionType::LambdaLike;
 };
 
