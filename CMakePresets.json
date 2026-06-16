@@ -28,7 +28,7 @@
             "displayName": "Windows-X86 Release",
             "description": "This build is only available on Windows",
             "architecture": "Win32",
-            "generator": "Visual Studio 17 2022",
+            "generator": "visual studio 18 2026",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
@@ -41,7 +41,7 @@
             "displayName": "Windows-x64 Release",
             "description": "This build is only available on Windows",
             "architecture": "x64",
-            "generator": "Visual Studio 17 2022",
+            "generator": "visual studio 18 2026",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
