@@ -8,6 +8,7 @@
 #include "sqvm.hpp"
 #include <iterator>
 #include <stdexcept>
+#include <utility>
 
 namespace sqbind17 {
 namespace detail {
@@ -125,6 +126,41 @@ class Array {
         detail::VM &vm = holder->vm;
         SQObjectPtr sqobj = detail::generic_cast<Type, SQObjectPtr>(vm, std::forward<Type>(obj));
         pArray()->Append(std::move(sqobj));
+    }
+
+    template <typename Type> void insert(SQInteger index, Type &&obj) {
+        detail::VM &vm = holder->vm;
+        SQObjectPtr sqobj = detail::generic_cast<Type, SQObjectPtr>(vm, std::forward<Type>(obj));
+        if (!pArray()->Insert(index, sqobj)) {
+            throw sqbind17::index_error("array insert index out of range");
+        }
+    }
+
+    void remove(SQInteger index) {
+        if (!pArray()->Remove(index)) {
+            throw sqbind17::index_error("array remove index out of range");
+        }
+    }
+
+    void resize(SQInteger new_size) {
+        pArray()->Resize(new_size);
+    }
+
+    void reverse() {
+        detail::VM &vm = holder->vm;
+        SQObjectPtr &self = holder->GetSQObjectPtr();
+        sq_pushobject(*vm, self);
+        sq_arrayreverse(*vm, -1);
+        sq_pop(*vm, 1);
+    }
+
+    template <typename Type> void getArray(Type *out, SQInteger count) {
+        if (count > size()) {
+            throw sqbind17::index_error("array buffer size too big");
+        }
+        for (SQInteger i = 0; i < count; ++i) {
+            out[i] = get<SQInteger, Type>(i);
+        }
     }
 
     template <typename Type> Type pop() {

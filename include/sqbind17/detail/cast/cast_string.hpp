@@ -4,6 +4,7 @@
 #include "sqbind17/detail/types/sqvm.hpp"
 #include <squirrel.h>
 #include <string>
+#include <type_traits>
 
 namespace sqbind17 {
 namespace detail {
@@ -61,6 +62,21 @@ static ToType generic_cast(detail::VM vm, FromType &&from) {
     return SQObjectPtr(SQString::Create(_ss(*vm), from.c_str(), from.size()));
 }
 
+// cast C string to SQObjectPtr
+template <typename FromType, typename ToType,
+          typename std::enable_if_t<std::is_same_v<std::decay_t<FromType>, const char *> ||
+                                    std::is_same_v<std::decay_t<FromType>, char *>> * = nullptr,
+          typename std::enable_if_t<std::is_same_v<std::decay_t<ToType>, SQObjectPtr>> * = nullptr>
+static ToType generic_cast(detail::VM vm, FromType &&from) {
+#ifdef TRACE_OBJECT_CAST
+    std::cout << "[TRACING] cast " << typeid(decltype(from)).name() << " to " << typeid(ToType).name() << std::endl;
+#endif
+    if (from == nullptr) {
+        return SQObjectPtr();
+    }
+    return SQObjectPtr(SQString::Create(_ss(*vm), from, static_cast<SQInteger>(std::char_traits<char>::length(from))));
+}
+
 // cast SQObjectPtr/HSQOBJECT to std::string
 template <typename FromType, typename ToType,
           typename std::enable_if_t<std::is_same_v<std::decay_t<FromType>, SQObjectPtr> ||
@@ -72,6 +88,29 @@ static ToType generic_cast(detail::VM vm, FromType &&from) {
 #endif
     if (from._type == tagSQObjectType::OT_STRING)
         return _stringval(from);
+    throw sqbind17::value_error("unsupported value");
+}
+
+// cast SQObjectPtr/HSQOBJECT to C string
+template <typename FromType, typename ToType,
+          typename std::enable_if_t<std::is_same_v<std::decay_t<FromType>, SQObjectPtr> ||
+                                    std::is_same_v<std::decay_t<FromType>, HSQOBJECT>> * = nullptr,
+          typename std::enable_if_t<std::is_same_v<std::decay_t<ToType>, const char *> ||
+                                    std::is_same_v<std::decay_t<ToType>, char *>> * = nullptr>
+static ToType generic_cast(detail::VM vm, FromType &&from) {
+#ifdef TRACE_OBJECT_CAST
+    std::cout << "[TRACING] cast " << typeid(decltype(from)).name() << " to " << typeid(ToType).name() << std::endl;
+#endif
+    if (from._type == tagSQObjectType::OT_NULL) {
+        return nullptr;
+    }
+    if (from._type == tagSQObjectType::OT_STRING) {
+        if constexpr (std::is_same_v<std::decay_t<ToType>, char *>) {
+            return const_cast<char *>(_stringval(from));
+        } else {
+            return _stringval(from);
+        }
+    }
     throw sqbind17::value_error("unsupported value");
 }
 

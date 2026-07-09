@@ -1,6 +1,7 @@
 #pragma once
 #include "sqbind17/detail/types/sqarray.hpp"
 #include "sqbind17/detail/types/sqclass.hpp"
+#include "sqbind17/detail/types/sqconst.hpp"
 #include "sqbind17/detail/types/sqfunction.hpp"
 #include "sqbind17/detail/types/sqinstance.hpp"
 #include "sqbind17/detail/types/sqobject.hpp"

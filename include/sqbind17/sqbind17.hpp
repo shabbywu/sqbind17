@@ -2,4 +2,5 @@
 #include "cast.hpp"
 #include "types.hpp"
 #include "vm/compiler.hpp"
+#include "vm/script.hpp"
 #include "vm/vm.hpp"

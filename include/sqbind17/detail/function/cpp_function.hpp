@@ -261,7 +261,11 @@ class overloaded_function : public generic_function {
     SQInteger call(detail::VM vm) {
         // FIXME: 2 硬编码会导致不支持类函数重载
         SQInteger nargs = sq_gettop(*vm) - 2;
-        return callers[nargs]->get_caller_impl()(vm);
+        auto caller = callers.find(nargs);
+        if (caller == callers.end()) {
+            return sq_throwerror(*vm, "wrong number of parameters");
+        }
+        return caller->second->get_caller_impl()(vm);
     }
 
   public:

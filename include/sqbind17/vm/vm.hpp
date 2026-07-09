@@ -2,6 +2,8 @@
 #include <cstring>
 #include <iostream>
 #include <memory.h>
+#include <type_traits>
+#include <utility>
 
 #include "sqbind17/detail/errors.hpp"
 #include "sqbind17/detail/types/sqfunction.hpp"
@@ -135,6 +137,34 @@ class VMProxy {
         }
 
         ClosureType closure{_closure(vm->Top()), GetVM()};
+        return closure();
+    }
+
+    template <class Return = void> std::remove_reference_t<Return> ExecuteFile(std::string path) {
+        typedef detail::Closure<std::remove_reference_t<Return>()> ClosureType;
+        HSQUIRRELVM &vm = GetSQVM();
+        detail::stack_guard stack_guard(vm);
+
+        if (!SQ_SUCCEEDED(sqstd_loadfile(vm, path.c_str(), SQTrue))) {
+            throw std::runtime_error(GetLastError());
+        }
+
+        ClosureType closure{_closure(vm->Top()), GetVM()};
+        return closure();
+    }
+
+    template <class Return, class Env> std::remove_reference_t<Return> ExecuteFile(std::string path, Env &env) {
+        typedef detail::Closure<std::remove_reference_t<Return>()> ClosureType;
+        HSQUIRRELVM &vm = GetSQVM();
+        detail::stack_guard stack_guard(vm);
+
+        if (!SQ_SUCCEEDED(sqstd_loadfile(vm, path.c_str(), SQTrue))) {
+            throw std::runtime_error(GetLastError());
+        }
+
+        ClosureType closure{_closure(vm->Top()), GetVM()};
+        SQObjectPtr pthis = detail::generic_cast<Env, SQObjectPtr>(GetVM(), std::forward<Env>(env));
+        closure.bindThis(pthis);
         return closure();
     }
 

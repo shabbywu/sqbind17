@@ -10,6 +10,8 @@
 #include "sqbind17/detail/template/template_setter.hpp"
 #include "sqbind17/detail/types/sqfunction.hpp"
 #include "sqvm.hpp"
+#include <map>
+#include <utility>
 
 namespace sqbind17 {
 namespace detail {
@@ -103,6 +105,14 @@ class Table : public std::enable_shared_from_this<Table> {
     // SQInteger size() {
     //     return pTable()->_usednodes;
     // }
+    SQInteger size() {
+        VM &vm = holder->GetVM();
+        SQObjectPtr &self = holder->GetSQObjectPtr();
+        sq_pushobject(*vm, self);
+        SQInteger result = sq_getsize(*vm, -1);
+        sq_pop(*vm, 1);
+        return result;
+    }
     SQInteger capacity() {
         return pTable()->_numofnodes;
     }
@@ -133,6 +143,22 @@ class Table : public std::enable_shared_from_this<Table> {
             return false;
         }
         return true;
+    }
+
+  public:
+    template <typename TK> bool has(TK &&key) {
+        VM &vm = holder->GetVM();
+        auto sqkey = generic_cast<TK, SQObjectPtr>(vm, std::forward<TK>(key));
+        SQObjectPtr ret;
+        return get(sqkey, ret);
+    }
+
+    template <typename TV> void bind(std::string name, TV &&value) {
+        set(std::move(name), std::forward<TV>(value));
+    }
+
+    template <typename Signature, typename TK> detail::Closure<Signature> getFunction(TK &&key) {
+        return get<TK, detail::Closure<Signature>>(std::forward<TK>(key));
     }
 
   protected:

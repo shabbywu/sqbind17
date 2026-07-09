@@ -3,6 +3,8 @@
 #include "stack_operation.hpp"
 #include <functional>
 #include <squirrel.h>
+#include <type_traits>
+#include <utility>
 
 namespace sqbind17 {
 namespace detail {
@@ -58,8 +60,12 @@ template <int index, typename Arg, typename... Args> struct load_args<index, std
 
 template <int index, typename Arg> struct load_args<index, std::tuple<Arg>> {
     static std::tuple<Arg> load(VM vm) {
-        auto arg = generic_stack_get<Arg>(vm, index);
-        return std::make_tuple<Arg>(std::forward<Arg>(arg));
+        if constexpr (std::is_reference_v<Arg>) {
+            return std::tuple<Arg>(generic_stack_get<Arg>(vm, index));
+        } else {
+            auto arg = generic_stack_get<Arg>(vm, index);
+            return std::make_tuple<Arg>(std::move(arg));
+        }
     }
 };
 
